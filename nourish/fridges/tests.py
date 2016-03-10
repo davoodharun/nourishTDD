@@ -13,7 +13,6 @@ class HomePageTest(TestCase):
         request = HttpRequest()
         #response object
         response = home_page(request)
+        expected_html = render_to_string('home.html')
         #porting assertion to bytes
-        self.assertTrue(response.content.startswith(b'<html>'))
-        self.assertIn(b'<title>Welcome to Nourish!</title>', response.content)
-        self.assertTrue(response.content.endswith(b'</html>'))
+        self.assertEqual(response.content.decode(), expected_html)
