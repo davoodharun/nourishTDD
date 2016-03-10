@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 import unittest
 
 
@@ -32,13 +33,18 @@ class NewUserTest(unittest.TestCase):
 		self.assertEqual(create_group_form.get_attribute('method'), 'post')
 		input_tags = self.browser.find_elements_by_tag_name('input')
 		self.assertTrue(
-			any(input_tag.get_attribute('name') == 'group_name' for input_tag in input_tags), "could not find input bodx with name group_name"
+			any(input_tag.get_attribute('name') == 'item_text' for input_tag in input_tags), "could not find input bodx with name group_name"
 		)
-		self.assertTrue(
-			any(input_tag.get_attribute('type') == 'submit' for input_tag in input_tags), "could not find submit button in form"
-		)
+		#User can add groups; enter group name in input and see it in table
+		input_box = self.browser.find_element_by_id('group_field')
+		self.assertEqual(input_box.get_attribute('placeholder'), 'Enter group name')
 	
+		input_box.send_keys('Fridge')
+		input_box.send_keys(Keys.ENTER)
 
+		table = self.browser.find_element_by_id('groups_table')
+		rows = table.find_elements_by_tag_name('tr')
+		self.assertIn('Fridge', [row.text for row in rows])
 		#Can remove (undo) added items from group
 
 		#Can remove items from group

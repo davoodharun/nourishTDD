@@ -6,8 +6,15 @@
     <h1> Welcome to Nourish!</h1>
     <button name="create_group" id="create_group_button">CREATE NEW GROUP</button>
     <form id="create_group_from" method="POST">
-      Group Name: <input name="group_name" type="text"><br>
-      <input type="SUBMIT" value="ADD">
+      Group Name: <input id='group_field' name="item_text" type="text" placeholder="Enter group name"><br>
+      {% csrf_token %}
     </form>
+
+    <h2>GROUPS</h2> 
+    <table id='groups_table'>
+      <tr>
+        <td>{{ new_group_text }}</td>
+      </tr>
+    </table>
   </body>
 </html>
