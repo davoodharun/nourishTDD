@@ -17,14 +17,19 @@ class NewUserTest(unittest.TestCase):
 
 	def test_can_create_a_storage_and_get_it_later(self):
 		self.browser.get('http://localhost:8000')
-		# Title should be Nourish
+		# Title and Header should include 'Nourish'
 		self.assertIn('Nourish', self.browser.title)
-		self.fail('incomplete test...')
-		#User can login
+		header_text = self.browser.find_element_by_tag_name('h1').header_text
+		self.assertIn('Nourish', header_text)
 
-		#Can create a group
+		#Can has a create group option button
+		create_group_button = self.browser.find_elements_by_id('create_group_button')
+		self.assertEqual(create_group_button.get_attribute('name'), 'create_group')
 
-		#Can add items to the group with associated data
+		#Once button is clicked, user can see create_group form
+		create_group_button.click()
+		create_group_form = self.browser.find_element_by_id('create_group_from')
+		self.assertEqual(create_group_form.get_attribute('method'), 'POST')
 
 		#Can remove (undo) added items from group
 
