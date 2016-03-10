@@ -10,7 +10,7 @@ class NewUserTest(unittest.TestCase):
 	def setUp(self):
 		self.browser = webdriver.Firefox()
 		#allow for browser to load (for now)
-		self.implicitly_wait(3)
+		self.browser.implicitly_wait(3)
 	
 	def tearDown(self):
 		self.browser.quit()
