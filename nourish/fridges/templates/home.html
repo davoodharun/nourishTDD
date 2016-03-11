@@ -4,7 +4,6 @@
   </head>
   <body>
     <h1> Welcome to Nourish!</h1>
-    <button name="create_group" id="create_group_button">CREATE NEW GROUP</button>
     <form id="create_group_from" method="POST">
       Group Name: <input id='group_field' name="item_text" type="text" placeholder="Enter group name"><br>
       {% csrf_token %}
@@ -12,9 +11,11 @@
 
     <h2>GROUPS</h2> 
     <table id='groups_table'>
+      {% for store in stores %}
       <tr>
-        <td>{{ new_group_text }}</td>
+        <td>{{ store.text }}</td>
       </tr>
+      {% endfor %}
     </table>
   </body>
 </html>

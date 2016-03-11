@@ -1,8 +1,10 @@
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from fridges.models import Store
 
 def home_page(request):
-    return render(request, 'home.html', {
-        'new_group_text': request.POST.get('item_text', '')
-    })
+    if request.method == 'POST':
+        Store.objects.create(text=request.POST['item_text'])
+        return redirect('/')
 
+    stores = Store.objects.all()
+    return render(request, 'home.html', {'stores': stores})

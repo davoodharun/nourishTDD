@@ -2,11 +2,6 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
 
-
-
-
-
-
 class NewUserTest(unittest.TestCase):
 	def setUp(self):
 		self.browser = webdriver.Firefox()
@@ -23,12 +18,8 @@ class NewUserTest(unittest.TestCase):
 		header_text = self.browser.find_element_by_tag_name('h1').text
 		self.assertIn('Nourish', header_text)
 
-		#Can has a create group option button
-		create_group_button = self.browser.find_element_by_id('create_group_button')
-		self.assertEqual(create_group_button.get_attribute('name'), 'create_group')
 
 		#Once button is clicked, user can see create_group form with input for group name and submit button
-		create_group_button.click()
 		create_group_form = self.browser.find_element_by_id('create_group_from')
 		self.assertEqual(create_group_form.get_attribute('method'), 'post')
 		input_tags = self.browser.find_elements_by_tag_name('input')
