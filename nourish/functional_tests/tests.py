@@ -30,19 +30,35 @@ class NewUserTest(unittest.TestCase):
 		input_box = self.browser.find_element_by_id('group_field')
 		self.assertEqual(input_box.get_attribute('placeholder'), 'Enter group name')
 	
-		input_box.send_keys('Fridge')
+		input_box.send_keys('Fridge_user1')
+
+		#when Enter is hit, user is taken to a new url where the Fridge list exists 
+		input_box.send_keys(Keys.ENTER)
+		user1_store_url = self.browser.current_url
+		self.assertRegex(user1_store_url, '/stores/.+')
+		self.check_for_row_in_list_table('Fridge_user1')
+
+		self.browser.quit()
+		self.browser = Firefox()
+
+		self.browser.get(self.live_server_url)
+		page_text = self.browser.find_element_by_tag_name('body').text
+		self.assertNotIn('Fridge_user1', page_text)
+
+		input_box = self.browser.find_element_by_id('group_field')
+		self.assertEqual(input_box.get_attribute('placeholder'), 'Enter group name')
+		input_box.send_keys('Fridge_user2')
+
+		#when Enter is hit, user is taken to a new url where the Fridge list exists 
 		input_box.send_keys(Keys.ENTER)
 
-		table = self.browser.find_element_by_id('groups_table')
-		rows = table.find_elements_by_tag_name('tr')
-		self.assertIn('Fridge', [row.text for row in rows])
-		#Can remove (undo) added items from group
+		user2_store_url = self.browser.current_url
+		self.assertRegex(user1_store_url, '/stores/.+')
+		self.assertNotEqual(user2_store_url, user1_store_url)
 
-		#Can remove items from group
-
-		#Is updated when item expires or is removed
-
-		#User's group is remembered (persistent storage)
+		page_text = self.browser.find_element_by_tag_name('body').text
+		self.assertNotIn('Fridge_user1', page_text)
+		self.assertIn('Fridge_user2', page_text)
 if __name__ == '__main__':
 	unittest.main(warnings='ignore')
 
