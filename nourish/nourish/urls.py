@@ -19,6 +19,7 @@ from fridges import views
 
 urlpatterns = [
     url(r'^$', views.home_page, name='home'),
+    url(r'^stores/new', views.new_store, name='new_store'),
     url(r'^stores/the-only-store/$', views.view_store, name='view_list')
     #url(r'^admin/', include(admin.site.urls)),
 ]

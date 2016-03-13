@@ -12,3 +12,8 @@ def home_page(request):
 def view_store(request):
     stores = Store.objects.all()
     return render(request, 'store.html', {'stores': stores})
+
+def new_store(request):
+    store = Store.objects.create()
+    Item.objects.create(text=request.POST['item_text'], store=store)
+    return redirect('/stores/the-only-store/')

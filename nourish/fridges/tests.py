@@ -3,7 +3,7 @@ from django.test import TestCase
 from fridges.views import home_page
 from django.http import HttpRequest
 from django.template.loader import render_to_string
-from fridges.models import Store
+from fridges.models import Store, Item
 
 class HomePageTest(TestCase):
     def test_rool_url_resolves_to_home_page_view(self):
@@ -53,21 +53,37 @@ class HomePageTest(TestCase):
         self.assertIn('store1', response.content.decode())
         self.assertIn('store2', response.content.decode())
 
-class StoreModelTest(TestCase):
+# Model Tests
+class StoreItemModelTest(TestCase):
     
     def test_save_retrieve_store(self):
-        first_store = Store()
-        first_store.text = 'Store item 1'
-        first_store.save()
+        store = Store()
+        store.save()
 
-        second_store = Store()
-        second_store.text = 'Store item 2'
-        second_store.save()
-        
-        saved_items = Store.objects.all()
-        self.assertEqual(saved_items.count(), 2)
-        self.assertEqual(saved_items[0].text, 'Store item 1')
-        self.assertEqual(saved_items[1].text, 'Store item 2')
+        first_item = Item()
+        first_item.text = 'item 1'
+        first_item.store = store
+        first_item.save()
+
+        second_item = Item()
+        second_item.text = 'item 2'
+        second_item.store = store
+        second_item.save()
+
+        store1 = Store.objects.first()
+        self.assertEqual(store1, store)
+
+        items = Item.objects.all()
+        self.assertEqual(Item.objects.count(), 2)
+
+        first_saved_item = items[0]
+        second_saved_item = items[1]
+
+        self.assertEqual(first_saved_item.text, 'item 1')
+        self.assertEqual(second_saved_item.text, 'item 2')
+        self.assertEqual(first_saved_item.store, store)
+        self.assertEqual(second_saved_item.store, store)
+
 
 class StoreViewTest(TestCase):
 
@@ -76,10 +92,30 @@ class StoreViewTest(TestCase):
         self.assertTemplateUsed(response, 'store.html')
 
     def test_displays_all_items(self):
-        Store.objects.create(text='item 1')
-        Store.objects.create(text='item 2')
+        store = Store.objects.create(text='store1')
+        Item.objects.create(text='item 1', store=store)
+        Item.objects.create(text='item 2', store=store)
 
         response = self.client.get('/stores/the-only-store/')
 
         self.assertContains(response, 'item 1')
         self.assertContains(response, 'item 2')
+
+class NewStoreTest(TestCase):
+
+    def test_can_save_post_request(self):
+        self.client.post(
+            '/stores/new',
+            data={'item_text': 'A new list item'}
+        )
+        self.assertEqual(Store.objects.count(), 1)
+        new_item = Store.objects.first()
+        self.assertEqual(new_item.text, 'A new list item')
+        
+
+    def test_redirects_after_post_request(self):
+        response = self.client.post(
+            '/stores/new',
+            data={'item_text': 'A new list item'}
+        )
+        self.assertRedirects(response, '/stores/the-only-store/')
