@@ -22,7 +22,7 @@ class HomePageTest(TestCase):
     def test_home_page_form_can_save_post_request(self):
         request = HttpRequest()
         request.method = 'POST'
-        request.POST['item_text'] = 'A new store item'
+        request.POST['store_text'] = 'A new store item'
 
         response = home_page(request)
 
@@ -32,11 +32,11 @@ class HomePageTest(TestCase):
     def test_redirects_after_post_request(self):
         request = HttpRequest()
         request.method = 'POST'
-        request.POST['item_text'] = 'A new store item'
+        request.POST['store_text'] = 'A new store item'
 
         response = home_page(request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/')
+        self.assertEqual(response['location'], '/stores/the-only-store/')
 
     def test_home_page_from_saves_post_requests_when_necessary(self):
         request = HttpRequest()
@@ -68,3 +68,18 @@ class StoreModelTest(TestCase):
         self.assertEqual(saved_items.count(), 2)
         self.assertEqual(saved_items[0].text, 'Store item 1')
         self.assertEqual(saved_items[1].text, 'Store item 2')
+
+class StoreViewTest(TestCase):
+
+    def uses_store_template(self):
+        response = self.client.get('/stores/the-only-store/')
+        self.assertTemplateUsed(response, 'store.html')
+
+    def test_displays_all_items(self):
+        Store.objects.create(text='item 1')
+        Store.objects.create(text='item 2')
+
+        response = self.client.get('/stores/the-only-store/')
+
+        self.assertContains(response, 'item 1')
+        self.assertContains(response, 'item 2')

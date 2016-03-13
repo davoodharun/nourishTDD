@@ -18,6 +18,7 @@ from django.contrib import admin
 from fridges import views
 
 urlpatterns = [
-    url(r'^$', views.home_page, name='home')
+    url(r'^$', views.home_page, name='home'),
+    url(r'^stores/the-only-store/$', views.view_store, name='view_list')
     #url(r'^admin/', include(admin.site.urls)),
 ]

@@ -4,7 +4,7 @@
   </head>
   <body>
     <h1> Welcome to Nourish!</h1>
-    <form id="create_group_from" method="POST">
+    <form id="create_group_from" method="POST" action="/">
       <input id='id_new_store' name="store_text" type="text" placeholder="Enter store name"><br>
       {% csrf_token %}
     </form>
