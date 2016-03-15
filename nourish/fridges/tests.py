@@ -88,18 +88,23 @@ class StoreItemModelTest(TestCase):
 class StoreViewTest(TestCase):
 
     def uses_store_template(self):
-        response = self.client.get('/stores/the-only-store/')
+        response = self.client.get('/stores/%d/' % (store.id))
         self.assertTemplateUsed(response, 'store.html')
 
-    def test_displays_all_items(self):
-        store = Store.objects.create(text='store1')
-        Item.objects.create(text='item 1', store=store)
-        Item.objects.create(text='item 2', store=store)
+    def test_displays_all_items_for_specific_store(self):
+        store1 = Store.objects.create()
+        Item.objects.create(text='item 1', store=store1)
+        Item.objects.create(text='item 2', store=store1)
+        store2 = Store.objects.create()
+        Item.objects.create(text='item 3', store=store2)
+        Item.objects.create(text='item 4', store=store2)
 
-        response = self.client.get('/stores/the-only-store/')
+        response = self.client.get('/stores/%d/' % (store1.id))
 
         self.assertContains(response, 'item 1')
         self.assertContains(response, 'item 2')
+        self.assertNotContains(response, 'item 3')
+        self.assertNotContains(response, 'item 4')
 
 class NewStoreTest(TestCase):
 
@@ -118,4 +123,35 @@ class NewStoreTest(TestCase):
             '/stores/new',
             data={'item_text': 'A new list item'}
         )
-        self.assertRedirects(response, '/stores/the-only-store/')
+
+        new_store = Store.objects.first()
+        self.assertRedirects(response, '/stores/%d/' % (new_store.id))
+
+class NewItemTest(TestCase):
+
+    def test_can_save_POST_item_to_existing_list(self):
+        store2 = Store.objects.create()
+        store1 = Store.objects.create()
+
+        self.client.post(
+            '/stores/%d/add_item' % (store1.id),
+            data={'item_text': 'item for list'}
+        )
+
+        self.assertEqual(Item.objects.count(), 1)
+        item = Item.objects.first()
+        self.assertEqual(item.text, 'item for list')
+        self.assertEqual(item.list, store1)
+
+        response = self.client.post(
+            '/stores/%d/add_item' % (store1.id),
+            data={'item_text': 'item for list'}
+        )
+
+        self.assertRedirects(response, '/stores/%d/' % (store1.id))
+
+    def test_correct_store_given_to_template(self):
+        store2 = Store.objects.create()
+        store1 = Store.objects.create()
+        response = self.client.get('stores/%d/' % (store1.id))
+        self.assertEqual(response.context['lists'], store1)

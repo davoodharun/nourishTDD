@@ -3,17 +3,17 @@
     <title>Welcome to Nourish!</title>
   </head>
   <body>
-    <h1> Welcome to Nourish!</h1>
-    <form id="create_group_from" method="POST" action="/">
+    <h1> Store Name: </h1>
+    <form id="create_group_from" method="POST" action="/stores/{{ store.id }}/add_item">
       <input id='id_new_store' name="item_text" type="text" placeholder="Enter store name"><br>
       {% csrf_token %}
     </form>
 
     <h2>GROUPS</h2> 
     <table id='store_table'>
-      {% for store in stores %}
+      {% for item in store.item_set.all %}
       <tr>
-        <td>{{ store.text }}</td>
+        <td>{{ item.text }}</td>
       </tr>
       {% endfor %}
     </table>
