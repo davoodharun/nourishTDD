@@ -28,7 +28,8 @@ class NewUserTest(LiveServerTestCase):
         input_box.send_keys(Keys.ENTER)
         user1_store_url = self.browser.current_url
         self.assertRegex(user1_store_url, '/stores/.+')
-        self.check_for_row_in_list_table('Fridge_user1')
+        title = self.browser.find_element_by_tag_name('title').text
+        self.assertIn(title, 'Fridge_user1')
 
         self.browser.quit()
         self.browser = webdriver.Firefox()

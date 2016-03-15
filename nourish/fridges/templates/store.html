@@ -3,7 +3,7 @@
     <title>Welcome to Nourish!</title>
   </head>
   <body>
-    <h1> Store Name: </h1>
+    <h1> Store Name: {{store.text}}</h1>
     <form id="create_group_from" method="POST" action="/stores/{{ store.id }}/add_item">
       <input id='id_new_store' name="item_text" type="text" placeholder="Enter store name"><br>
       {% csrf_token %}

@@ -32,11 +32,12 @@ class HomePageTest(TestCase):
     def test_redirects_after_post_request(self):
         request = HttpRequest()
         request.method = 'POST'
-        request.POST['store_text'] = 'A new store item'
+        request.POST['store_text'] = 'A new store'
 
         response = home_page(request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/stores/the-only-store/')
+        store = Store.objects.last()
+        self.assertEqual(response['location'], '/stores/%d/' % (store.id))
 
     def test_home_page_from_saves_post_requests_when_necessary(self):
         request = HttpRequest()
@@ -111,17 +112,17 @@ class NewStoreTest(TestCase):
     def test_can_save_post_request(self):
         self.client.post(
             '/stores/new',
-            data={'item_text': 'A new list item'}
+            data={'store_text': 'A new store'}
         )
         self.assertEqual(Store.objects.count(), 1)
-        new_item = Store.objects.first()
-        self.assertEqual(new_item.text, 'A new list item')
+        new_store = Store.objects.first()
+        self.assertEqual(new_store.text, 'A new store')
         
 
     def test_redirects_after_post_request(self):
         response = self.client.post(
             '/stores/new',
-            data={'item_text': 'A new list item'}
+            data={'store_text': 'A new store'}
         )
 
         new_store = Store.objects.first()
@@ -141,7 +142,7 @@ class NewItemTest(TestCase):
         self.assertEqual(Item.objects.count(), 1)
         item = Item.objects.first()
         self.assertEqual(item.text, 'item for list')
-        self.assertEqual(item.list, store1)
+        self.assertEqual(item.store, store1)
 
         response = self.client.post(
             '/stores/%d/add_item' % (store1.id),
@@ -154,4 +155,4 @@ class NewItemTest(TestCase):
         store2 = Store.objects.create()
         store1 = Store.objects.create()
         response = self.client.get('stores/%d/' % (store1.id))
-        self.assertEqual(response.context['lists'], store1)
+        self.assertEqual(response.context['store'].id, store1.id)

@@ -15,8 +15,7 @@ def view_store(request, store_id):
     return render(request, 'store.html', {'store': store})
 
 def new_store(request):
-    store = Store.objects.create()
-    Item.objects.create(text=request.POST['item_text'], store=store)
+    store = Store.objects.create(text=request.POST['store_text'])
     return redirect('/stores/%d/' % (store.id))
 
 def add_item(request, store_id):
