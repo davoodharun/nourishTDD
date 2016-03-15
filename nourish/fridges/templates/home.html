@@ -4,16 +4,16 @@
   </head>
   <body>
     <h1> Welcome to Nourish!</h1>
-    <form id="create_group_from" method="POST" actions='/store/new'>
-      <input id='id_new_store' name="store_text" type="text" placeholder="Enter store name"><br>
+    <form id="create_group_from" method="POST" actions='/fridge/new'>
+      <input id='id_new_fridge' name="fridge_text" type="text" placeholder="Enter fridge name"><br>
       {% csrf_token %}
     </form>
 
     <h2>GROUPS</h2> 
-    <table id='store_table'>
-      {% for store in stores %}
+    <table id='fridge_table'>
+      {% for fridge in fridges %}
       <tr>
-        <td>{{ store.text }}</td>
+        <td>{{ fridge.text }}</td>
       </tr>
       {% endfor %}
     </table>

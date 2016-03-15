@@ -1,24 +1,24 @@
 from django.shortcuts import redirect, render
-from fridges.models import Store, Item
+from fridges.models import Fridge, Item
 
 def home_page(request):
     if request.method == 'POST':
-        Store.objects.create(text=request.POST['store_text'])
-        store = Store.objects.last()
-        return redirect('/stores/%d/' % (store.id))
+        Fridge.objects.create(text=request.POST['fridge_text'])
+        fridge = Fridge.objects.last()
+        return redirect('/fridges/%d/' % (fridge.id))
 
-    stores = Store.objects.all()
-    return render(request, 'home.html', {'stores': stores})
+    fridges = Fridge.objects.all()
+    return render(request, 'home.html', {'fridges': fridges})
 
-def view_store(request, store_id):
-    store = Store.objects.get(id=store_id)
-    return render(request, 'store.html', {'store': store})
+def view_fridge(request, fridge_id):
+    fridge = Fridge.objects.get(id=fridge_id)
+    return render(request, 'fridge.html', {'fridge': fridge})
 
-def new_store(request):
-    store = Store.objects.create(text=request.POST['store_text'])
-    return redirect('/stores/%d/' % (store.id))
+def new_fridge(request):
+    fridge = Fridge.objects.create(text=request.POST['fridge_text'])
+    return redirect('/fridges/%d/' % (fridge.id))
 
-def add_item(request, store_id):
-    store = Store.objects.get(id=store_id)
-    Item.objects.create(text=request.POST['item_text'], store=store)
-    return redirect('/stores/%d/' % (store.id))
+def add_item(request, fridge_id):
+    fridge = Fridge.objects.get(id=fridge_id)
+    Item.objects.create(text=request.POST['item_text'], fridge=fridge)
+    return redirect('/fridges/%d/' % (fridge.id))

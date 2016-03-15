@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>Welcome to Nourish!</title>
+  </head>
+  <body>
+    <h1> Fridge Name: {{fridge.text}}</h1>
+    <form id="create_group_from" method="POST" action="/fridges/{{ fridge.id }}/add_item">
+      <input id='id_new_fridge' name="item_text" type="text" placeholder="Enter fridge name"><br>
+      {% csrf_token %}
+    </form>
+
+    <h2>GROUPS</h2> 
+    <table id='fridge_table'>
+      {% for item in fridge.item_set.all %}
+      <tr>
+        <td>{{ item.text }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>

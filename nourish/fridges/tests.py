@@ -3,7 +3,7 @@ from django.test import TestCase
 from fridges.views import home_page
 from django.http import HttpRequest
 from django.template.loader import render_to_string
-from fridges.models import Store, Item
+from fridges.models import Fridge, Item
 
 class HomePageTest(TestCase):
     def test_rool_url_resolves_to_home_page_view(self):
@@ -22,57 +22,57 @@ class HomePageTest(TestCase):
     def test_home_page_form_can_save_post_request(self):
         request = HttpRequest()
         request.method = 'POST'
-        request.POST['store_text'] = 'A new store item'
+        request.POST['fridge_text'] = 'A new fridge item'
 
         response = home_page(request)
 
-        self.assertEqual(Store.objects.count(), 1)
-        self.assertEqual(Store.objects.all()[0].text, 'A new store item')
+        self.assertEqual(Fridge.objects.count(), 1)
+        self.assertEqual(Fridge.objects.all()[0].text, 'A new fridge item')
 
     def test_redirects_after_post_request(self):
         request = HttpRequest()
         request.method = 'POST'
-        request.POST['store_text'] = 'A new store'
+        request.POST['fridge_text'] = 'A new fridge'
 
         response = home_page(request)
         self.assertEqual(response.status_code, 302)
-        store = Store.objects.last()
-        self.assertEqual(response['location'], '/stores/%d/' % (store.id))
+        fridge = Fridge.objects.last()
+        self.assertEqual(response['location'], '/fridges/%d/' % (fridge.id))
 
     def test_home_page_from_saves_post_requests_when_necessary(self):
         request = HttpRequest()
         home_page(request)
-        self.assertEqual(Store.objects.count(), 0)
+        self.assertEqual(Fridge.objects.count(), 0)
 
-    def test_shows_all_stores(self):
-        Store.objects.create(text='store1')
-        Store.objects.create(text='store2')
+    def test_shows_all_fridges(self):
+        Fridge.objects.create(text='fridge1')
+        Fridge.objects.create(text='fridge2')
 
         request = HttpRequest()
         response = home_page(request)
 
-        self.assertIn('store1', response.content.decode())
-        self.assertIn('store2', response.content.decode())
+        self.assertIn('fridge1', response.content.decode())
+        self.assertIn('fridge2', response.content.decode())
 
 # Model Tests
-class StoreItemModelTest(TestCase):
+class FridgeItemModelTest(TestCase):
     
-    def test_save_retrieve_store(self):
-        store = Store()
-        store.save()
+    def test_save_retrieve_fridge(self):
+        fridge = Fridge()
+        fridge.save()
 
         first_item = Item()
         first_item.text = 'item 1'
-        first_item.store = store
+        first_item.fridge = fridge
         first_item.save()
 
         second_item = Item()
         second_item.text = 'item 2'
-        second_item.store = store
+        second_item.fridge = fridge
         second_item.save()
 
-        store1 = Store.objects.first()
-        self.assertEqual(store1, store)
+        fridge1 = Fridge.objects.first()
+        self.assertEqual(fridge1, fridge)
 
         items = Item.objects.all()
         self.assertEqual(Item.objects.count(), 2)
@@ -82,77 +82,77 @@ class StoreItemModelTest(TestCase):
 
         self.assertEqual(first_saved_item.text, 'item 1')
         self.assertEqual(second_saved_item.text, 'item 2')
-        self.assertEqual(first_saved_item.store, store)
-        self.assertEqual(second_saved_item.store, store)
+        self.assertEqual(first_saved_item.fridge, fridge)
+        self.assertEqual(second_saved_item.fridge, fridge)
 
 
-class StoreViewTest(TestCase):
+class FridgeViewTest(TestCase):
 
-    def uses_store_template(self):
-        response = self.client.get('/stores/%d/' % (store.id))
-        self.assertTemplateUsed(response, 'store.html')
+    def uses_fridge_template(self):
+        response = self.client.get('/fridges/%d/' % (fridge.id))
+        self.assertTemplateUsed(response, 'fridge.html')
 
-    def test_displays_all_items_for_specific_store(self):
-        store1 = Store.objects.create()
-        Item.objects.create(text='item 1', store=store1)
-        Item.objects.create(text='item 2', store=store1)
-        store2 = Store.objects.create()
-        Item.objects.create(text='item 3', store=store2)
-        Item.objects.create(text='item 4', store=store2)
+    def test_displays_all_items_for_specific_fridge(self):
+        fridge1 = Fridge.objects.create()
+        Item.objects.create(text='item 1', fridge=fridge1)
+        Item.objects.create(text='item 2', fridge=fridge1)
+        fridge2 = Fridge.objects.create()
+        Item.objects.create(text='item 3', fridge=fridge2)
+        Item.objects.create(text='item 4', fridge=fridge2)
 
-        response = self.client.get('/stores/%d/' % (store1.id))
+        response = self.client.get('/fridges/%d/' % (fridge1.id))
 
         self.assertContains(response, 'item 1')
         self.assertContains(response, 'item 2')
         self.assertNotContains(response, 'item 3')
         self.assertNotContains(response, 'item 4')
 
-class NewStoreTest(TestCase):
+class NewFridgeTest(TestCase):
 
     def test_can_save_post_request(self):
         self.client.post(
-            '/stores/new',
-            data={'store_text': 'A new store'}
+            '/fridges/new',
+            data={'fridge_text': 'A new fridge'}
         )
-        self.assertEqual(Store.objects.count(), 1)
-        new_store = Store.objects.first()
-        self.assertEqual(new_store.text, 'A new store')
+        self.assertEqual(Fridge.objects.count(), 1)
+        new_fridge = Fridge.objects.first()
+        self.assertEqual(new_fridge.text, 'A new fridge')
         
 
     def test_redirects_after_post_request(self):
         response = self.client.post(
-            '/stores/new',
-            data={'store_text': 'A new store'}
+            '/fridges/new',
+            data={'fridge_text': 'A new fridge'}
         )
 
-        new_store = Store.objects.first()
-        self.assertRedirects(response, '/stores/%d/' % (new_store.id))
+        new_fridge = Fridge.objects.first()
+        self.assertRedirects(response, '/fridges/%d/' % (new_fridge.id))
 
 class NewItemTest(TestCase):
 
     def test_can_save_POST_item_to_existing_list(self):
-        store2 = Store.objects.create()
-        store1 = Store.objects.create()
+        fridge2 = Fridge.objects.create()
+        fridge1 = Fridge.objects.create()
 
         self.client.post(
-            '/stores/%d/add_item' % (store1.id),
+            '/fridges/%d/add_item' % (fridge1.id),
             data={'item_text': 'item for list'}
         )
 
         self.assertEqual(Item.objects.count(), 1)
         item = Item.objects.first()
         self.assertEqual(item.text, 'item for list')
-        self.assertEqual(item.store, store1)
+        self.assertEqual(item.fridge, fridge1)
 
         response = self.client.post(
-            '/stores/%d/add_item' % (store1.id),
+            '/fridges/%d/add_item' % (fridge1.id),
             data={'item_text': 'item for list'}
         )
 
-        self.assertRedirects(response, '/stores/%d/' % (store1.id))
+        self.assertRedirects(response, '/fridges/%d/' % (fridge1.id))
 
-    def test_correct_store_given_to_template(self):
-        store2 = Store.objects.create()
-        store1 = Store.objects.create()
-        response = self.client.get('stores/%d/' % (store1.id))
-        self.assertEqual(response.context['store'].id, store1.id)
+    def test_correct_fridge_given_to_template(self):
+        fridge2 = Fridge.objects.create()
+        fridge1 = Fridge.objects.create()
+        response = self.client.get('fridges/%d/' % (fridge1.id))
+        self.assertEqual(response.context['fridge'].id, fridge1.id)
