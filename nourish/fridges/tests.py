@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from fridges.models import Fridge, Item
 
 class HomePageTest(TestCase):
-    def test_rool_url_resolves_to_home_page_view(self):
+    def test_root_url_goes_to_home(self):
         found = resolve('/')
         self.assertEqual(found.func, home_page)
 
@@ -19,7 +19,7 @@ class HomePageTest(TestCase):
         #porting assertion to bytes
         self.assertEqual(response.content.decode(), expected_html)
 
-    def test_home_page_form_can_save_post_request(self):
+    def test_home_page_form__saves_post(self):
         request = HttpRequest()
         request.method = 'POST'
         request.POST['fridge_text'] = 'A new fridge item'
@@ -29,7 +29,7 @@ class HomePageTest(TestCase):
         self.assertEqual(Fridge.objects.count(), 1)
         self.assertEqual(Fridge.objects.all()[0].text, 'A new fridge item')
 
-    def test_redirects_after_post_request(self):
+    def test_redirects_after_post(self):
         request = HttpRequest()
         request.method = 'POST'
         request.POST['fridge_text'] = 'A new fridge'
@@ -39,7 +39,7 @@ class HomePageTest(TestCase):
         fridge = Fridge.objects.last()
         self.assertEqual(response['location'], '/fridges/%d/' % (fridge.id))
 
-    def test_home_page_from_saves_post_requests_when_necessary(self):
+    def test_home_page_from_saves_post_only_when_input_is_given(self):
         request = HttpRequest()
         home_page(request)
         self.assertEqual(Fridge.objects.count(), 0)

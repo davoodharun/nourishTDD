@@ -17,7 +17,7 @@ class NewUserTest(LiveServerTestCase):
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
 
-    def test_can_create_a_storage_and_get_it_later(self):
+    def test_can_create_a_persisted_storage(self):
         self.browser.get(self.live_server_url)
 
         #User can add groups; enter fridge name in input and see it in table
