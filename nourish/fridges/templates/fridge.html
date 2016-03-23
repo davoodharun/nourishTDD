@@ -3,7 +3,7 @@
     <title>Welcome to Nourish!</title>
   </head>
   <body>
-    <h1> Fridge Name: {{fridge.text}}</h1>
+    <h1> Store Name: {{fridge.text}}</h1>
     <form id="create_group_from" method="POST" action="/fridges/{{ fridge.id }}/add_item">
       <input id='id_new_fridge' name="item_text" type="text" placeholder="Enter fridge name"><br>
       {% csrf_token %}

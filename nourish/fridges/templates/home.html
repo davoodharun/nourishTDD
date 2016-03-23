@@ -13,7 +13,7 @@
     <table id='fridge_table'>
       {% for fridge in fridges %}
       <tr>
-        <td>{{ fridge.text }}</td>
+       <td> <a href='/fridges/{{fridge.id}}/'>{{ fridge.text }}</a></td>
       </tr>
       {% endfor %}
     </table>
